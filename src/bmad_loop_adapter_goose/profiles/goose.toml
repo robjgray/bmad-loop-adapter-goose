@@ -1,0 +1,22 @@
+# Goose CLI (https://github.com/aaif-goose/goose). Driven over the Agent Client
+# Protocol on stdio (`goose acp`): the adapter observes completion from the
+# JSON-RPC prompt response (stopReason + usage), so this profile is hookless.
+# Interactive escalation falls back to `goose run` (the adapter constructs that
+# argv directly; no launch_args needed for the ACP transport).
+#
+# GOOSE_MODE=auto is set in [env]: Goose refuses to run non-interactively in
+# Approve/SmartApprove modes; Auto auto-allows tool calls. --no-session is
+# intentionally NOT used: it causes a SQLite panic in v1.43.0 ("index out of
+# bounds: the len is 28 but the index is 28"). Regular session mode works fine.
+name = "goose"
+binary = "goose"
+prompt_template = "{prompt}"
+usage_parser = "none"
+skill_tree = ".agents/skills"
+first_run_note = "ensure a provider is configured with `goose configure`"
+
+[env]
+GOOSE_MODE = "auto"
+
+[hooks]
+dialect = "none"

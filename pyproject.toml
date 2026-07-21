@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.30"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bmad-loop-adapter-goose"
+version = "0.1.0"
+description = "Goose CLI adapter for bmad-loop — drives `goose acp` over stdio JSON-RPC"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+  "bmad-loop>=0.8.1",
+]
+
+[project.entry-points."bmad_loop.cli_adapters"]
+goose = "bmad_loop_adapter_goose"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bmad_loop_adapter_goose"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/bmad_loop_adapter_goose"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

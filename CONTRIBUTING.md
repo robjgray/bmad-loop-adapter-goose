@@ -30,11 +30,11 @@ shim on the next run — no reinstall loop. The shim's entry-point scan
 re-runs every time the tool starts, so a freshly added adapter or a
 changed factory shows up immediately.
 
-If bmad-loop is *not* checked out at a branch that has the registry
-(`bmad_loop.adapters.registry`), the adapter's import will fail at
-entry-point load time. `bmad-loop validate` surfaces the failure as
-`warning: external adapter 'goose' failed to load: <reason>` — install
-the registry-bearing branch to clear it.
+If bmad-loop is *not* checked out at a branch that has the entry-point
+registry (`bmad_loop.adapters.profile.register_cli_adapter`), the
+adapter's import will fail at entry-point load time. `bmad-loop validate`
+surfaces the failure as `warning: external adapter 'goose' failed to
+load: <reason>` — install the registry-bearing branch to clear it.
 
 To uninstall:
 
@@ -60,12 +60,12 @@ Once the editable install is in place, the cross-repo edit loop is:
 For adapter-only changes (`goose_acp.py`, the TOML, the entry-point
 registration) the loop is just: edit → restart → validate.
 
-For bmad-loop changes (`registry.py`, `cli.py`, the engine) the loop is:
-edit → restart → validate. If the change broke the adapter contract
-(e.g. signature of a `CodingCLIAdapter` base method, fields on
-`CLIProfile`, the `get_cli_adapter` API), the adapter's unit tests in
-`tests/test_goose_acp.py` should catch it on the next run; fix the
-adapter to match the new contract. The bmad-loop repo's own tests
+For bmad-loop changes (`_entrypoints.py`, `profile.py`, `cli.py`, the
+engine) the loop is: edit → restart → validate. If the change broke the
+adapter contract (e.g. signature of a `CodingCLIAdapter` base method,
+fields on `CLIProfile`, the `get_cli_adapter` API), the adapter's unit
+tests in `tests/test_goose_acp.py` should catch it on the next run; fix
+the adapter to match the new contract. The bmad-loop repo's own tests
 (`tests/test_cli.py`, `tests/test_opencode_http.py`,
 `tests/test_cli_adapter_registry.py`) catch engine-side regressions.
 
@@ -93,11 +93,11 @@ release or verifying a change that touches the full run path.
 
 ## Sanity check: dispatch still maps roles correctly
 
-After a bmad-loop change, confirm the registry still maps each role to
-the right adapter class. The expected output is `GooseDevAcpAdapter`
-for dev/review (because they run `bmad-dev-auto`, which writes no
-`result.json`, so the adapter synthesizes one) and `GooseAcpAdapter`
-for triage:
+After a bmad-loop change, confirm the entry-point scan still maps each
+role to the right adapter class. The expected output is
+`GooseDevAcpAdapter` for dev/review (because they run `bmad-dev-auto`,
+which writes no `result.json`, so the adapter synthesizes one) and
+`GooseAcpAdapter` for triage:
 
 ```python
 # in any python with both bmad-loop and the adapter installed:
@@ -121,8 +121,8 @@ review: GooseDevAcpAdapter
 triage: GooseAcpAdapter
 ```
 
-If you see the opencode-http classes instead, the registry isn't picking
-up the adapter — the validate output will say
+If you see the opencode-http classes instead, the entry-point scan
+isn't picking up the adapter — the validate output will say
 `warning: external adapter 'goose' failed to load: <reason>`.
 
 ## Reference
@@ -133,9 +133,12 @@ up the adapter — the validate output will say
 - The entry-point group is `bmad_loop.cli_adapters`. The
   `register_cli_adapter(profile_name="goose", ...)` call lives in
   `src/bmad_loop_adapter_goose/__init__.py` and runs at import time.
-- The bmad-loop maintainer's framing: the registry is a *seam* for
-  community adapters, not a place to add in-tree adapters. Changes to
-  the engine itself should be necessary, YAGNI, and not over-abstracted
-  for a single use case. When in doubt, follow the
-  `bmad_loop.mux_backends` precedent (same shape, terminal-multiplexer
-  backends).
+  The registration function is imported from
+  `bmad_loop.adapters.profile` (not a separate registry module — the
+  adapter registration lives alongside the profile TOML loader, and
+  the entry-point scan is shared with `bmad_loop.mux_backends` via
+  `bmad_loop.adapters._entrypoints`).
+- The bmad-loop maintainer's framing: the entry-point scan is a *seam*
+  for community adapters, not a place to add in-tree adapters. Changes
+  to the engine itself should be necessary, YAGNI, and not
+  over-abstracted for a single use case.

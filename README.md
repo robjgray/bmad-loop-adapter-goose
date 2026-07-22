@@ -24,8 +24,7 @@ CLI adapter entry-point registry, which is currently on a feature branch
 pending merge into bmad-loop's `main`. Install both together:
 
 ```bash
-uv tool install "bmad-loop @ git+https://github.com/robjgray/bmad-loop.git@feat/cli-adapter-registry-v2" \
-  --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
+uv tool install "bmad-loop @ git+https://github.com/robjgray/bmad-loop.git@feat/cli-adapter-registry-v2" --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
 ```
 
 Once the registry lands in a bmad-loop release, this simplifies to the
@@ -39,17 +38,15 @@ uv tool install "bmad-loop @ git+https://github.com/bmad-code-org/bmad-loop.git"
 ## Set up a project
 
 ```bash
-# 1. Initialize bmad-loop with the goose profile
+# 1. Initialize bmad-loop with the goose profile (sets [adapter] name = "goose"
+#    in policy.toml automatically — no manual edit needed)
 bmad-loop init --cli goose
 
-# 2. Set the adapter name in policy.toml
-#    Edit .bmad-loop/policy.toml: change [adapter] name from "claude" to "goose"
-
-# 3. Install the BMAD method (bmm module + skills)
+# 2. Install the BMAD method (bmm module + skills)
 #    Via the BMAD-METHOD installer — see:
 #    https://github.com/bmad-code-org/BMAD-METHOD
 
-# 4. Validate
+# 3. Validate
 bmad-loop validate
 ```
 

@@ -30,41 +30,11 @@ through the Goose ACP transport.
 
 ## For development (iterating on the adapter or bmad-loop)
 
-The fast loop is to install both repos as editable so edits are picked up
-without reinstalling. The trick is `uv tool install -e` plus
-`--with-editable` for the other package, so the `bmad-loop` shim resolves
-entry points through the editable site-packages:
-
-```bash
-# 1. Clone both repos side by side
-git clone https://github.com/bmad-code-org/bmad-loop
-git clone https://github.com/robjgray/bmad-loop-adapter-goose
-
-# 2. In the adapter repo, check out the bmad-loop branch that ships the
-#    registry (currently feat/cli-adapter-registry-v2 on the bmad-loop side).
-cd bmad-loop && git checkout feat/cli-adapter-registry-v2 && cd ..
-
-# 3. Install bmad-loop as an editable tool, with the adapter as a
-#    co-installed editable
-uv tool install -e ./bmad-loop --with-editable ./bmad-loop-adapter-goose
-```
-
-After this, edits in either repo's `src/` are visible to the `bmad-loop`
-shim on the next run — no reinstall loop. The shim's entry-point scan
-re-runs every time the tool starts, so a freshly added adapter or a
-changed factory shows up immediately.
-
-If bmad-loop is *not* checked out at a branch that has the registry
-(`bmad_loop.adapters.registry`), the adapter's import will fail at
-entry-point load time. `bmad-loop validate` surfaces the failure as
-`warning: external adapter 'goose' failed to load: <reason>` — install
-the registry-bearing branch to clear it.
-
-To uninstall:
-
-```bash
-uv tool uninstall bmad-loop
-```
+The development loop is documented in [CONTRIBUTING.md](CONTRIBUTING.md):
+editable install across both repos, daily edit cycle, testing, the
+dispatch-check recipe, and common pitfalls. README stays focused on
+usage; CONTRIBUTING is for people working on the adapter or bmad-loop
+itself.
 
 ## How it works
 

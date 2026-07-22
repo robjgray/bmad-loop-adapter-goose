@@ -18,15 +18,27 @@ uv tool install "bmad-loop" \
 Then in your project:
 
 ```bash
+# bmad-loop init's --cli flag accepts any profile name the registry
+# can resolve. "goose" is registered by this adapter package via the
+# bmad_loop.cli_adapters entry-point group — not a first-party profile
+# name in bmad-loop. The init writes the bundled bmad-loop-* skills
+# (always wanted) and a hook script (a no-op for the hookless goose
+# profile; harmless).
 bmad-loop init --cli goose
+
+# In .bmad-loop/policy.toml, set the [adapter] name to "goose" — the
+# same value the registry can resolve, so the orchestrator dispatches
+# to the GooseDevAcpAdapter (dev/review) or GooseAcpAdapter (triage).
 # edit .bmad-loop/policy.toml: set [adapter] name = "goose"
+
 bmad-loop validate
 bmad-loop run
 ```
 
-`bmad-loop validate` reports the Goose profile and confirms it is hookless
-(no hook registration required). Run `bmad-loop run` to dispatch a session
-through the Goose ACP transport.
+`bmad-loop validate` reports the Goose profile (via the entry-point
+scan) and confirms it is hookless — no hook registration required, no
+`httpx` check forced (the adapter manages its own dependencies). Run
+`bmad-loop run` to dispatch a session through the Goose ACP transport.
 
 ## For development (iterating on the adapter or bmad-loop)
 

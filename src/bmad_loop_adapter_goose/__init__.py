@@ -12,8 +12,8 @@ from .goose_acp import GooseAcpAdapter, GooseDevAcpAdapter
 
 
 def register() -> None:
-    """Register the Goose adapter and profile with bmad-loop's registry."""
-    from bmad_loop.adapters.registry import register_cli_adapter
+    """Register the Goose adapter and profile with bmad-loop."""
+    from bmad_loop.adapters.profile import register_cli_adapter
 
     register_cli_adapter(
         profile_name="goose",

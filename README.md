@@ -24,14 +24,14 @@ CLI adapter entry-point registry, which is currently on a feature branch
 pending merge into bmad-loop's `main`. Install both together:
 
 ```bash
-uv tool install "bmad-loop @ git+https://github.com/robjgray/bmad-loop.git@feat/cli-adapter-registry-v2" --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
+uv tool install "bmad-loop[tui] @ git+https://github.com/robjgray/bmad-loop.git@feat/cli-adapter-registry-v2" --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
 ```
 
 Once the registry lands in a bmad-loop release, this simplifies to the
 maintainer's canonical source:
 
 ```bash
-uv tool install "bmad-loop @ git+https://github.com/bmad-code-org/bmad-loop.git" \
+uv tool install "bmad-loop[tui] @ git+https://github.com/bmad-code-org/bmad-loop.git" \
   --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
 ```
 

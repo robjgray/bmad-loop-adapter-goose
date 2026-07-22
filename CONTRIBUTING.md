@@ -125,33 +125,6 @@ If you see the opencode-http classes instead, the registry isn't picking
 up the adapter — the validate output will say
 `warning: external adapter 'goose' failed to load: <reason>`.
 
-## Common pitfalls
-
-- **Stale shim on PATH.** `where bmad-loop` (Windows) or `which
-  bmad-loop` (macOS/Linux) shows the shim that's actually used. If a
-  prior `pip install` left a shim that wins over the uv tool shim,
-  remove it (`uv tool uninstall bmad-loop` first, then physically
-  delete the stale shim). The "Daily loop" recipe above assumes the uv
-  tool shim wins.
-- **Wrong branch in the editable checkout.** `cd ../bmad-loop && git
-  status` — make sure you're on the branch that has the registry seam.
-  After the registry PR merges and is released, you'd be on `main`.
-- **Stale `__pycache__`.** If you see odd import errors after a
-  refactor, delete `__pycache__/` in the bmad-loop and adapter `src/`
-  dirs. The editable install should make this unnecessary, but it
-  occasionally bites.
-- **`bmad-loop>=0.8.1` floor fights editable installs against an
-  unreleased branch.** The adapter's `pyproject.toml` doesn't pin a
-  version on `bmad-loop`; the runtime needs the registry module, not a
-  specific version. If you ever need a temporary version pin for a
-  specific dev branch, add it locally — don't put it back in
-  `pyproject.toml` (a hard floor breaks users on a different
-  bmad-loop version).
-- **BMAD config not found at validate time.** The validate preflight
-  checks for `_bmad/bmm/config.yaml`. That's a separate concern from
-  the adapter; install the BMAD method (bmm) module via the
-  BMAD-METHOD installer. The adapter doesn't ship the bmm skills.
-
 ## Reference
 
 - The seam contract is documented in

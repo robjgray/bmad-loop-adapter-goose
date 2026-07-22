@@ -31,10 +31,10 @@ through the Goose ACP transport.
 ## For development (iterating on the adapter or bmad-loop)
 
 The development loop is documented in [CONTRIBUTING.md](CONTRIBUTING.md):
-editable install across both repos, daily edit cycle, testing, the
-dispatch-check recipe, and common pitfalls. README stays focused on
-usage; CONTRIBUTING is for people working on the adapter or bmad-loop
-itself.
+editable install across both repos, the daily edit cycle, testing, and
+the dispatch-check recipe for verifying a bmad-loop change didn't break
+the adapter wiring. README stays focused on usage; CONTRIBUTING is for
+people working on the adapter or bmad-loop itself.
 
 ## How it works
 

@@ -8,37 +8,59 @@ The adapter registers itself via the `bmad_loop.cli_adapters` entry-point
 group, so no manual configuration step is needed — once co-installed,
 bmad-loop discovers the Goose profile and adapter automatically.
 
-## For users (after the registry lands in a release)
+## Prerequisites
+
+- [Goose](https://github.com/aaif-goose/goose) installed and a provider
+  configured (`goose configure`)
+- [uv](https://docs.astral.sh/uv/) installed
+- The [BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) installer
+  run in your project to install the `bmm` module (provides the
+  `bmad-dev-auto` skill and review hunters that the orchestrator drives)
+
+## Install
+
+bmad-loop is not on PyPI — it installs from GitHub. This adapter requires the
+CLI adapter entry-point registry, which is currently on a feature branch
+pending merge into bmad-loop's `main`. Install both together:
 
 ```bash
-uv tool install "bmad-loop" \
+uv tool install "bmad-loop @ git+https://github.com/robjgray/bmad-loop.git@feat/cli-adapter-registry-v2" \
   --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
 ```
 
-Then in your project:
+Once the registry lands in a bmad-loop release, this simplifies to the
+maintainer's canonical source:
 
 ```bash
-# bmad-loop init's --cli flag accepts any profile name the registry
-# can resolve. "goose" is registered by this adapter package via the
-# bmad_loop.cli_adapters entry-point group — not a first-party profile
-# name in bmad-loop. The init writes the bundled bmad-loop-* skills
-# (always wanted) and a hook script (a no-op for the hookless goose
-# profile; harmless).
-bmad-loop init --cli goose
-
-# In .bmad-loop/policy.toml, set the [adapter] name to "goose" — the
-# same value the registry can resolve, so the orchestrator dispatches
-# to the GooseDevAcpAdapter (dev/review) or GooseAcpAdapter (triage).
-# edit .bmad-loop/policy.toml: set [adapter] name = "goose"
-
-bmad-loop validate
-bmad-loop run
+uv tool install "bmad-loop @ git+https://github.com/bmad-code-org/bmad-loop.git" \
+  --with "bmad-loop-adapter-goose @ git+https://github.com/robjgray/bmad-loop-adapter-goose.git"
 ```
 
-`bmad-loop validate` reports the Goose profile (via the entry-point
-scan) and confirms it is hookless — no hook registration required, no
-`httpx` check forced (the adapter manages its own dependencies). Run
-`bmad-loop run` to dispatch a session through the Goose ACP transport.
+## Set up a project
+
+```bash
+# 1. Initialize bmad-loop with the goose profile
+bmad-loop init --cli goose
+
+# 2. Set the adapter name in policy.toml
+#    Edit .bmad-loop/policy.toml: change [adapter] name from "claude" to "goose"
+
+# 3. Install the BMAD method (bmm module + skills)
+#    Via the BMAD-METHOD installer — see:
+#    https://github.com/bmad-code-org/BMAD-METHOD
+
+# 4. Validate
+bmad-loop validate
+```
+
+`bmad-loop validate` should report:
+```
+  ok: goose found
+  ok: goose: hookless — no hook registration needed
+  ok: upstream skills present (bmad-dev-auto + review hunters)
+```
+
+Then `bmad-loop run` to dispatch a session through the Goose ACP transport.
 
 ## For development (iterating on the adapter or bmad-loop)
 
@@ -60,5 +82,5 @@ people working on the adapter or bmad-loop itself.
   profile name to the registered adapter factory
 
 The reference for the seam is
-[`docs/cli-adapters.md`](https://github.com/bmad-code-org/bmad-loop/blob/main/docs/cli-adapters.md)
+[`docs/cli-adapters.md`](https://github.com/robjgray/bmad-loop/blob/feat/cli-adapter-registry-v2/docs/cli-adapters.md)
 in the bmad-loop repo.

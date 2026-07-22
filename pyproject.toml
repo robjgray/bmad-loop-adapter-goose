@@ -11,7 +11,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
-  "bmad-loop>=0.8.1",
+  "bmad-loop",
 ]
 
 [project.entry-points."bmad_loop.cli_adapters"]

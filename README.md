@@ -53,14 +53,26 @@ the entry-point scan finds the adapter automatically.
 
 ### 1. Install the BMAD method (bmm module + skills)
 
-The BMAD-METHOD installer places the upstream skills (`bmad-dev-auto`, the
-review hunters) into your project's skill tree:
+Use the BMAD-METHOD installer with `--tools goose` so skills land in
+`.agents/skills/` (the goose profile's skill tree):
 
 ```bash
-npx bmad-method install --yes --modules bmm --tools claude-code
+npx bmad-method install --modules bmm --tools goose
 ```
 
-This creates `_bmad/`, `.claude/skills/`, and the bmm configuration.
+This creates `_bmad/`, `.agents/skills/`, and the bmm configuration.
+
+> **`bmad-review-verification-gap`:** bmad-loop validate also checks for
+> this skill. On BMAD v6.10.0 the installer does not include it (it exists
+> as a v6-shim that forwards to the merged `bmad-review` skill, but the
+> shim was never added to the skill manifest). If it's missing, copy it
+> manually from a clone of BMAD-METHOD:
+> ```bash
+> cp -r src/core-skills/v6-shims/bmad-review-verification-gap /path/to/project/.agents/skills/
+> cp -r src/core-skills/bmad-review /path/to/project/.agents/skills/
+> ```
+> This is a [BMAD-method installer gap](https://github.com/bmad-code-org/BMAD-METHOD),
+> not a bmad-loop or adapter issue.
 
 ### 2. Initialize bmad-loop with the goose profile
 
@@ -69,43 +81,11 @@ bmad-loop init --cli goose
 ```
 
 This installs the bundled `bmad-loop-*` skills (resolve, sweep, setup) into
-`.agents/skills/` (the goose profile's skill tree), writes
-`.bmad-loop/policy.toml` with `[adapter] name = "goose"`, and sets up
-gitignores. No manual policy edit is needed.
+`.agents/skills/`, writes `.bmad-loop/policy.toml` with
+`[adapter] name = "goose"`, and sets up gitignores. No manual policy edit
+is needed.
 
-### 3. Copy upstream skills to the goose skill tree
-
-The BMAD installer places skills in `.claude/skills/` (the claude-code
-tree). The goose profile reads from `.agents/skills/`. You need the
-upstream BMAD skills in both trees:
-
-**Linux/macOS:**
-```bash
-cp -r .claude/skills/bmad-dev-auto .agents/skills/
-cp -r .claude/skills/bmad-review-adversarial-general .agents/skills/
-cp -r .claude/skills/bmad-review-edge-case-hunter .agents/skills/
-```
-
-**Windows (PowerShell):**
-```powershell
-Copy-Item -Recurse .claude/skills/bmad-dev-auto .agents/skills/
-Copy-Item -Recurse .claude/skills/bmad-review-adversarial-general .agents/skills/
-Copy-Item -Recurse .claude/skills/bmad-review-edge-case-hunter .agents/skills/
-```
-
-> **`bmad-review-verification-gap`:** bmad-loop validate also checks for
-> this skill. On BMAD v6.10.0 it may not be installed by the BMAD installer
-> (it exists as a v6-shim that forwards to the merged `bmad-review` skill).
-> If it's missing from `.claude/skills/`, copy both the shim and
-> `bmad-review` from the BMAD-method repo:
-> ```bash
-> # from a clone of BMAD-METHOD:
-> cp -r src/core-skills/v6-shims/bmad-review-verification-gap /path/to/project/.agents/skills/
-> cp -r src/core-skills/bmad-review /path/to/project/.agents/skills/
-> ```
-> This is a BMAD-method installer gap, not a bmad-loop or adapter issue.
-
-### 4. Validate
+### 3. Validate
 
 ```bash
 bmad-loop validate
@@ -121,7 +101,7 @@ Expected output:
 The remaining validate failures (sprint-status, multiplexer) are
 infrastructure prerequisites, not adapter issues — see the bmad-loop docs.
 
-### 5. Run
+### 4. Run
 
 ```bash
 bmad-loop run --dry-run    # print the plan
